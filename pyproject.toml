@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools >= 80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rgt"
+version = "0.1.0"
+description = "Relly Good Things."
+readme = "README.md"
+requires-python = ">=3.14"
+license = {text = "MIT"} 
+authors = [
+    {name = "J.Hu", email = "joestarhu@163.com"}
+]
+urls = {homepage = "https://github.com/joestarhu/rgt"}  # GitHub 链接作为主页
+classifiers = [
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.14"
+]
+dependencies = [
+    "bcrypt>=5.0.0",
+    "pycryptodomex>=3.23.0",
+    "python-jose>=3.5.0",
+]
+
+
+[project.optional-dependencies]
+security = ["python-jose", "bcrypt", "pycryptodomex"]
+
+[tool.setuptools.packages.find]
+exclude = ["test", "examples", "script", "tutorials"]
+
+[tool.setuptools]
+zip-safe = true

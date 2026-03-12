@@ -1,2 +1,2 @@
 # rgt
-really good thigns
+Really Good Things(RGT)
