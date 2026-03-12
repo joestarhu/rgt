@@ -3,7 +3,7 @@ requires = ["setuptools >= 80.9.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "rgt"
+name = "really-good-things"
 version = "0.1.0"
 description = "Relly Good Things."
 readme = "README.md"
