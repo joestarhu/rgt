@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Any
+from typing import Any
 from uuid import uuid4
 from jose import jwt
 
@@ -52,7 +52,7 @@ class JWTManager:
             algorithm=self.algorithm
         )
 
-    def decode(self, token: str) -> Dict[str, Any]:
+    def decode(self, token: str) -> dict[str, Any]:
         """
         JWT解码
 
