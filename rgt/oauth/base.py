@@ -2,6 +2,16 @@ from abc import ABC, abstractmethod
 from typing import Any, Protocol
 from requests import Session
 from httpx import AsyncClient
+from dataclasses import dataclass
+
+
+@dataclass
+class OAuthUserInfo:
+    union_id: str
+    open_id: str
+    nickname: str
+    avatar_url: str
+    phone: str
 
 
 class OAuthCredentials(Protocol):
@@ -57,7 +67,7 @@ class SyncAuthBase(OAuthBase):
         return rsp.json()
 
     @abstractmethod
-    def get_user_info(self, auth_code: str) -> dict[str, Any]: ...
+    def get_user_info(self, auth_code: str) -> OAuthUserInfo: ...
 
 
 class AsyncAuthBase(OAuthBase):
@@ -70,4 +80,4 @@ class AsyncAuthBase(OAuthBase):
         return rsp.json()
 
     @abstractmethod
-    async def get_user_info(self, auth_code: str) -> dict[str, Any]: ...
+    async def get_user_info(self, auth_code: str) -> OAuthUserInfo: ...

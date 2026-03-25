@@ -1,6 +1,8 @@
-from .base import SyncAuthBase, AsyncAuthBase, OAuthCredentials, Session, AsyncClient
+from .base import SyncAuthBase, AsyncAuthBase, OAuthCredentials, OAuthUserInfo
 from typing import Any
 from urllib.parse import urlencode
+from requests import Session
+from httpx import AsyncClient
 
 
 DEFAULT_SCOPE = "openid"
@@ -49,23 +51,43 @@ class DingTalkAuthSupport:
     def parse_access_token(self: OAuthCredentials, result: dict) -> str:
         return result.get("accessToken", "")
 
+    def parse_user_info(self, result: dict) -> OAuthUserInfo:
+        phone_number = result.get("mobile", "")
+        phone_code = result.get("stateCode", "")
+
+        if phone_number and phone_code:
+            phone = f"+{phone_code}{phone_number}"
+        else:
+            phone = ""
+
+        return OAuthUserInfo(
+            union_id=result.get("unionId", ""),
+            open_id=result.get("openId", ""),
+            nickname=result.get("nick", ""),
+            avatar_url=result.get("avatarUrl", ""),
+            phone=phone
+        )
+
 
 class DingTalkAuth(DingTalkAuthSupport, SyncAuthBase):
-    def get_user_info(self, auth_code: str) -> dict[str, Any]:
+    def get_user_info(self, auth_code: str) -> OAuthUserInfo:
         with Session() as s:
             result = self._post(s, **self.get_access_token_params(auth_code))
             access_token = self.parse_access_token(result)
 
             result = self._get(s, **self.get_user_info_params(access_token))
-        return result
+            user_info = self.parse_user_info(result)
+
+        return user_info
 
 
 class DingTalkAsyncAuth(DingTalkAuthSupport, AsyncAuthBase):
-    async def get_user_info(self, auth_code: str) -> dict[str, Any]:
+    async def get_user_info(self, auth_code: str) -> OAuthUserInfo:
         async with AsyncClient(timeout=self.timeout) as client:
             result = await self._post(client, **self.get_access_token_params(auth_code))
             access_token = self.parse_access_token(result)
 
             result = await self._get(client, **self.get_user_info_params(access_token))
+            user_info = self.parse_user_info(result)
 
-        return result
+        return user_info

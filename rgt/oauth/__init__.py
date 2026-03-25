@@ -1,5 +1,9 @@
+from .base import OAuthUserInfo
 from .dingtalk import DingTalkAuth, DingTalkAsyncAuth
 from .feishu import FeiShuAuth, FeiShuAsyncAuth
 
-__all__ = ["FeiShuAuth", "FeiShuAsyncAuth",
-           "DingTalkAuth", "DingTalkAsyncAuth"]
+__all__ = [
+    "OAuthUserInfo",
+    "FeiShuAuth", "FeiShuAsyncAuth",
+    "DingTalkAuth", "DingTalkAsyncAuth"
+]

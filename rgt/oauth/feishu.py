@@ -1,5 +1,7 @@
-from .base import SyncAuthBase, AsyncAuthBase, OAuthCredentials, Session, AsyncClient
+from .base import SyncAuthBase, AsyncAuthBase, OAuthCredentials, OAuthUserInfo
 from typing import Any
+from requests import Session
+from httpx import AsyncClient
 from urllib.parse import urlencode
 
 
@@ -53,9 +55,19 @@ class FeiShuAuthSupport:
     def parse_user_access_token_rsp(self, result: dict) -> str:
         return result["data"]["access_token"]
 
+    def parse_user_info(self, result: dict) -> OAuthUserInfo:
+        data = result.get("data", {})
+        return OAuthUserInfo(
+            union_id=data.get("union_id", ""),
+            open_id=data.get("open_id", ""),
+            nickname=data.get("name", ""),
+            avatar_url=data.get("avatar_url", ""),
+            phone=data.get("mobile", "")
+        )
+
 
 class FeiShuAuth(FeiShuAuthSupport, SyncAuthBase):
-    def get_user_info(self, auth_code: str) -> dict[str, Any]:
+    def get_user_info(self, auth_code: str) -> OAuthUserInfo:
         with Session() as s:
             # 1.获取app_access_token
             result = self._post(
@@ -73,12 +85,13 @@ class FeiShuAuth(FeiShuAuthSupport, SyncAuthBase):
             result = self._get(
                 s, **self.get_user_info_params(user_access_token),
             )
+            user_info = self.parse_user_info(result)
 
-        return result
+        return user_info
 
 
 class FeiShuAsyncAuth(FeiShuAuthSupport, AsyncAuthBase):
-    async def get_user_info(self, auth_code: str) -> dict[str, Any]:
+    async def get_user_info(self, auth_code: str) -> OAuthUserInfo:
         async with AsyncClient(timeout=self.timeout) as client:
             # 1.获取app_access_token
             result = await self._post(
@@ -99,5 +112,6 @@ class FeiShuAsyncAuth(FeiShuAuthSupport, AsyncAuthBase):
                 client,
                 **self.get_user_info_params(user_access_token)
             )
+            user_info = self.parse_user_info(result)
 
-        return result
+        return user_info
