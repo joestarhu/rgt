@@ -35,3 +35,45 @@ phone_enc = aes_ecb_obj.encrypt(phone)
 phone_dec = aes_ecb_obj.decrypt(phone_enc)
 
 ```
+
+
+# Oauth模块
+```python
+from rgt.oauth import DingTalkAuth, DingTalkAsyncAuth, FeiShuAuth, FeiShuAsyncAuth
+from asyncio import run
+
+
+# 钉钉同步Oauth认证,
+client_id="dingxx......"
+client_secret="............."
+d = DingTalkAuth(client_id,client_secret)
+d.generate_auth_url("http://127.0.0.1:8080")
+d.get_user_info("auth_code")
+
+# 钉钉异步Oauth认证
+client_id="dingxx......"
+client_secret="............."
+d = DingTalkAsyncAuth(ding_client_idak,client_secret)
+d.generate_auth_url("http://127.0.0.1:8080")
+run(d.get_user_info("auth_code"))
+
+
+# 飞书同步Oauth认证
+app_id="cli_xxxx......"
+app_secret="............."
+d = FeiShuAuth(app_id,app_secret)
+d.generate_auth_url("http://127.0.0.1:8080")
+d.get_user_info("auth_code")
+
+
+# 飞书异步Oauth认证
+app_id="cli_xxxx......"
+app_secret="............."
+d = FeiShuAsyncAuth(app_id,app_secret)
+d.generate_auth_url("http://127.0.0.1:8080")
+run(d.get_user_info("auth_code"))
+
+
+
+
+```
