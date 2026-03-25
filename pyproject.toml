@@ -22,8 +22,10 @@ classifiers = [
 ]
 dependencies = [
     "bcrypt>=5.0.0",
+    "httpx>=0.28.1",
     "pycryptodomex>=3.23.0",
     "python-jose>=3.5.0",
+    "requests>=2.32.5",
 ]
 
 
