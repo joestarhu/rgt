@@ -4,6 +4,8 @@ from .feishu import FeiShuAuth, FeiShuAsyncAuth
 
 __all__ = [
     "OAuthUserInfo",
-    "FeiShuAuth", "FeiShuAsyncAuth",
-    "DingTalkAuth", "DingTalkAsyncAuth"
+    "FeiShuAuth",
+    "FeiShuAsyncAuth",
+    "DingTalkAuth",
+    "DingTalkAsyncAuth",
 ]

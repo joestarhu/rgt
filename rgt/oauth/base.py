@@ -1,17 +1,18 @@
 from abc import ABC, abstractmethod
-from typing import Any, Protocol
-from requests import Session
-from httpx import AsyncClient
 from dataclasses import dataclass
+from typing import Any, Protocol
+
+from httpx import AsyncClient
+from requests import Session
 
 
-@dataclass
+@dataclass(slots=True)
 class OAuthUserInfo:
-    union_id: str
-    open_id: str
-    nickname: str
-    avatar_url: str
-    phone: str
+    union_id: str = ""
+    open_id: str = ""
+    nickname: str = ""
+    avatar_url: str = ""
+    phone: str = ""
 
 
 class OAuthCredentials(Protocol):
@@ -53,31 +54,50 @@ class OAuthBase(ABC):
                           redirect_uri: str,
                           scope: str | None = None,
                           state: str | None = None,
-                          **kw
-                          ) -> str: ...
+                          **kwargs: Any
+                          ) -> str:
+        raise NotImplementedError
 
 
 class SyncAuthBase(OAuthBase):
-    def _post(self, s: Session, **kw) -> dict[str, Any]:
-        rsp = s.post(**kw, timeout=self.timeout)
-        return rsp.json()
+    def _request(self, session: Session, method: str, **kwargs: Any) -> dict[str, Any]:
+        try:
+            resp = session.request(method, timeout=self.timeout, **kwargs)
+            resp.raise_for_status()
+            data = resp.json()
+        except:
+            raise
 
-    def _get(self, s: Session, **kw) -> dict[str, Any]:
-        rsp = s.get(**kw, timeout=self.timeout)
-        return rsp.json()
+        return data
+
+    def _post(self, session: Session, **kwargs) -> dict[str, Any]:
+        return self._request(session, "POST", **kwargs)
+
+    def _get(self, session: Session, **kwargs) -> dict[str, Any]:
+        return self._request(session, "GET", **kwargs)
 
     @abstractmethod
-    def get_user_info(self, auth_code: str) -> OAuthUserInfo: ...
+    def get_user_info(self, auth_code: str) -> OAuthUserInfo:
+        raise NotImplementedError
 
 
 class AsyncAuthBase(OAuthBase):
-    async def _post(self, client: AsyncClient, **kw) -> dict[str, Any]:
-        rsp = await client.post(**kw)
-        return rsp.json()
+    async def _request(self, client: AsyncClient, method: str, **kwargs) -> dict[str, Any]:
+        try:
+            resp = await client.request(method=method, **kwargs)
+            resp.raise_for_status()
+            data = resp.json()
+        except:
+            raise
 
-    async def _get(self, client: AsyncClient, **kw) -> dict[str, Any]:
-        rsp = await client.get(**kw)
-        return rsp.json()
+        return data
+
+    async def _post(self, client: AsyncClient, **kwargs) -> dict[str, Any]:
+        return await self._request(client, "POST", **kwargs)
+
+    async def _get(self, client: AsyncClient, **kwargs) -> dict[str, Any]:
+        return await self._request(client, "GET", **kwargs)
 
     @abstractmethod
-    async def get_user_info(self, auth_code: str) -> OAuthUserInfo: ...
+    async def get_user_info(self, auth_code: str) -> OAuthUserInfo:
+        raise NotImplementedError
